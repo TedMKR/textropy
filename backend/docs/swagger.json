@@ -1,0 +1,323 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/v1/analyze": {
+            "post": {
+                "description": "Выполняет энтропийный анализ текста по начальной букве",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analysis"
+                ],
+                "summary": "Анализ текста",
+                "parameters": [
+                    {
+                        "description": "Запрос на анализ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AnalyzeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AnalysisResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/translate-analyze": {
+            "post": {
+                "description": "Выполняет перевод на целевой язык, обратный перевод и сравнение энтропий",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "translation"
+                ],
+                "summary": "Полный цикл перевода и анализа",
+                "parameters": [
+                    {
+                        "description": "Запрос на перевод и анализ",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TranslateAndAnalyzeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TranslateAndAnalyzeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Проверка работоспособности API",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.AnalysisResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "entropy": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "letter_stats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.LetterStatDTO"
+                    }
+                },
+                "mean": {
+                    "type": "number"
+                },
+                "std_dev": {
+                    "type": "number"
+                },
+                "total_words": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AnalyzeRequest": {
+            "type": "object",
+            "required": [
+                "content",
+                "language"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "translator": {
+                    "description": "yandex, google, deepl",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LetterFreqChangeDTO": {
+            "type": "object",
+            "properties": {
+                "back_translated_count": {
+                    "type": "integer"
+                },
+                "back_translated_probability": {
+                    "type": "number"
+                },
+                "letter": {
+                    "type": "string"
+                },
+                "original_count": {
+                    "type": "integer"
+                },
+                "original_probability": {
+                    "type": "number"
+                },
+                "probability_change": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.LetterStatDTO": {
+            "type": "object",
+            "properties": {
+                "contribution": {
+                    "type": "number"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "letter": {
+                    "type": "string"
+                },
+                "probability": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.TranslateAndAnalyzeRequest": {
+            "type": "object",
+            "required": [
+                "content",
+                "source_language",
+                "target_language",
+                "translator"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "source_language": {
+                    "description": "ru, en",
+                    "type": "string"
+                },
+                "target_language": {
+                    "description": "sw, en (промежуточный язык)",
+                    "type": "string"
+                },
+                "translator": {
+                    "description": "yandex, google, deepl",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TranslateAndAnalyzeResponse": {
+            "type": "object",
+            "properties": {
+                "back_translated_analysis": {
+                    "$ref": "#/definitions/dto.AnalysisResponse"
+                },
+                "back_translated_text": {
+                    "description": "Обратно переведенный текст и анализ",
+                    "type": "string"
+                },
+                "comparison": {
+                    "description": "Сравнение",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/dto.TranslationComparisonDTO"
+                        }
+                    ]
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "original_analysis": {
+                    "$ref": "#/definitions/dto.AnalysisResponse"
+                },
+                "original_language": {
+                    "type": "string"
+                },
+                "original_text": {
+                    "description": "Оригинальный текст и анализ",
+                    "type": "string"
+                },
+                "target_language": {
+                    "type": "string"
+                },
+                "translated_analysis": {
+                    "$ref": "#/definitions/dto.AnalysisResponse"
+                },
+                "translated_text": {
+                    "description": "Переведенный текст и анализ",
+                    "type": "string"
+                },
+                "translator_used": {
+                    "description": "Метаданные",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TranslationComparisonDTO": {
+            "type": "object",
+            "properties": {
+                "entropy_loss": {
+                    "type": "number"
+                },
+                "entropy_loss_percent": {
+                    "type": "number"
+                },
+                "letter_freq_changes": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dto.LetterFreqChangeDTO"
+                    }
+                },
+                "mean_difference": {
+                    "type": "number"
+                },
+                "std_dev_difference": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

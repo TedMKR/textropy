@@ -1,0 +1,213 @@
+definitions:
+  dto.AnalysisResponse:
+    properties:
+      created_at:
+        type: string
+      entropy:
+        type: number
+      id:
+        type: string
+      letter_stats:
+        items:
+          $ref: '#/definitions/dto.LetterStatDTO'
+        type: array
+      mean:
+        type: number
+      std_dev:
+        type: number
+      total_words:
+        type: integer
+    type: object
+  dto.AnalyzeRequest:
+    properties:
+      content:
+        type: string
+      language:
+        type: string
+      translator:
+        description: yandex, google, deepl
+        type: string
+    required:
+    - content
+    - language
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  dto.LetterFreqChangeDTO:
+    properties:
+      back_translated_count:
+        type: integer
+      back_translated_probability:
+        type: number
+      letter:
+        type: string
+      original_count:
+        type: integer
+      original_probability:
+        type: number
+      probability_change:
+        type: number
+    type: object
+  dto.LetterStatDTO:
+    properties:
+      contribution:
+        type: number
+      count:
+        type: integer
+      letter:
+        type: string
+      probability:
+        type: number
+    type: object
+  dto.TranslateAndAnalyzeRequest:
+    properties:
+      content:
+        type: string
+      source_language:
+        description: ru, en
+        type: string
+      target_language:
+        description: sw, en (промежуточный язык)
+        type: string
+      translator:
+        description: yandex, google, deepl
+        type: string
+    required:
+    - content
+    - source_language
+    - target_language
+    - translator
+    type: object
+  dto.TranslateAndAnalyzeResponse:
+    properties:
+      back_translated_analysis:
+        $ref: '#/definitions/dto.AnalysisResponse'
+      back_translated_text:
+        description: Обратно переведенный текст и анализ
+        type: string
+      comparison:
+        allOf:
+        - $ref: '#/definitions/dto.TranslationComparisonDTO'
+        description: Сравнение
+      created_at:
+        type: string
+      id:
+        type: string
+      original_analysis:
+        $ref: '#/definitions/dto.AnalysisResponse'
+      original_language:
+        type: string
+      original_text:
+        description: Оригинальный текст и анализ
+        type: string
+      target_language:
+        type: string
+      translated_analysis:
+        $ref: '#/definitions/dto.AnalysisResponse'
+      translated_text:
+        description: Переведенный текст и анализ
+        type: string
+      translator_used:
+        description: Метаданные
+        type: string
+    type: object
+  dto.TranslationComparisonDTO:
+    properties:
+      entropy_loss:
+        type: number
+      entropy_loss_percent:
+        type: number
+      letter_freq_changes:
+        additionalProperties:
+          $ref: '#/definitions/dto.LetterFreqChangeDTO'
+        type: object
+      mean_difference:
+        type: number
+      std_dev_difference:
+        type: number
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/analyze:
+    post:
+      consumes:
+      - application/json
+      description: Выполняет энтропийный анализ текста по начальной букве
+      parameters:
+      - description: Запрос на анализ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AnalyzeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AnalysisResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Анализ текста
+      tags:
+      - analysis
+  /api/v1/translate-analyze:
+    post:
+      consumes:
+      - application/json
+      description: Выполняет перевод на целевой язык, обратный перевод и сравнение
+        энтропий
+      parameters:
+      - description: Запрос на перевод и анализ
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TranslateAndAnalyzeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TranslateAndAnalyzeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Полный цикл перевода и анализа
+      tags:
+      - translation
+  /health:
+    get:
+      description: Проверка работоспособности API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health check
+      tags:
+      - health
+swagger: "2.0"
