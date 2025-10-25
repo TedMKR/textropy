@@ -77,28 +77,6 @@ docker-compose up --build
 # Swagger: http://localhost:8080/swagger/index.html
 ```
 
-### Вариант 2: Локальная разработка
-
-#### Backend
-```bash
-cd backend
-go mod download
-cp .env.example .env
-go run cmd/api/main.go
-```
-
-#### Frontend
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-Подробная инструкция: [DEPLOYMENT.md](DEPLOYMENT.md)
-
-**Важно**: Для полного цикла перевода требуется API ключ Yandex Translate.  
-См. подробную инструкцию: [SETUP_GUIDE.md](SETUP_GUIDE.md)
 
 ---
 
@@ -213,33 +191,6 @@ npm run dev
 
 ---
 
-## 🔧 Конфигурация
-
-### Backend Environment Variables
-
-```bash
-# Server
-PORT=8080
-GIN_MODE=debug # или release для production
-
-# Translation APIs (опционально)
-YANDEX_API_KEY=your_key
-GOOGLE_API_KEY=your_key
-DEEPL_API_KEY=your_key
-
-# CORS
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
-```
-
-### Frontend Environment Variables
-
-```bash
-VITE_API_URL=http://localhost:8080
-VITE_APP_NAME=Textropy
-VITE_APP_VERSION=1.0.0
-```
-
----
 
 ## 📁 Структура Проекта
 
@@ -274,57 +225,6 @@ textropy/
 ├── DEPLOYMENT.md              # Инструкция по развертыванию
 └── README.md
 ```
-
----
-
-## 🧪 Тестирование
-
-```bash
-# Backend тесты
-cd backend
-go test ./... -v
-
-# Frontend тесты
-cd frontend
-npm run test
-
-# Линтинг
-go vet ./...        # Backend
-npm run lint        # Frontend
-```
-
----
-
-## 🤝 Вклад в проект
-
-Приветствуются любые предложения и улучшения!
-
-1. Fork проекта
-2. Создайте feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit изменений (`git commit -m 'Add some AmazingFeature'`)
-4. Push в branch (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
----
-
-## 📝 Лицензия
-
-Распространяется под лицензией MIT. См. `LICENSE` для деталей.
-
----
-
-## 👨‍💻 Автор
-
-Создано для учебного курса "Теория и системы обработки информации"
-
----
-
-## 🙏 Благодарности
-
-- Алгоритм основан на работе по энтропийному анализу символьной информации
-- Формула энтропии Клода Шеннона
-- Open-source community за отличные инструменты и библиотеки
-
 ---
 
 <div align="center">
