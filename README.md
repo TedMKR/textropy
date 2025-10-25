@@ -167,41 +167,6 @@ docker-compose up --build
 
 ---
 
-
-## 📁 Структура Проекта
-
-```
-textropy/
-├── backend/                    # Go backend
-│   ├── cmd/api/               # Точка входа
-│   ├── internal/
-│   │   ├── domain/            # Domain Layer (DDD)
-│   │   ├── application/       # Use Cases, Services
-│   │   ├── infrastructure/    # External dependencies
-│   │   └── presentation/      # HTTP handlers, DTOs
-│   └── pkg/                   # Shared utilities
-│       ├── config/
-│       └── logger/
-├── frontend/                   # React frontend
-│   ├── src/
-│   │   ├── app/               # App setup
-│   │   ├── features/          # Feature modules
-│   │   │   ├── upload/
-│   │   │   ├── analysis/
-│   │   │   └── settings/
-│   │   ├── shared/            # Shared components
-│   │   │   ├── ui/
-│   │   │   ├── api/
-│   │   │   └── utils/
-│   │   ├── store/             # Zustand store
-│   │   └── theme/             # Theme provider
-│   └── public/
-├── docker-compose.yml
-├── nginx.conf
-└── README.md
-```
----
-
 <div align="center">
 
 **Сделано с ❤️ используя Go, React и TypeScript**
