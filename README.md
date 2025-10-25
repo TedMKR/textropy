@@ -198,7 +198,6 @@ textropy/
 │   └── public/
 ├── docker-compose.yml
 ├── nginx.conf
-├── DEPLOYMENT.md              # Инструкция по развертыванию
 └── README.md
 ```
 ---
