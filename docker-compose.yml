@@ -12,7 +12,7 @@ services:
       - PORT=8080
       - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost
       - YANDEX_API_KEY=${YANDEX_API_KEY:-AQVNxHWLSh6pPI1yvrz-xImUK1DG8vf0TCw3tv7S}
-      - YANDEX_FOLDER_ID=${YANDEX_FOLDER_ID:-b1gfvslsqfqr6kgr1ub7}
+      - YANDEX_FOLDER_ID=${YANDEX_FOLDER_ID:-b1g286nm8bn52u338eev}
     volumes:
       - ./backend:/app
     networks:
