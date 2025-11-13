@@ -11,8 +11,6 @@
 
 **Веб-приложение для энтропийного анализа текста по алгоритму Шеннона**
 
-[Демо](#) • [Документация](DEPLOYMENT.md) • [API Docs](http://localhost:8080/swagger/index.html)
-
 </div>
 
 ---
@@ -26,36 +24,12 @@
 
 - 📝 **Загрузка текстовых документов** - поддержка .txt, .doc, .docx форматов
 - 📊 **Энтропийный анализ** - расчет по формуле Шеннона: `H = -Σ(Pᵢ × log₂(Pᵢ))`
-- 🌐 **Мультиязычный перевод** - интеграция с Yandex, Google, DeepL Translate API
+- 🌐 **Мультиязычный перевод** - интеграция с Yandex
 - 🔄 **Полный цикл перевода** - перевод вперед + обратный перевод + сравнение энтропий
 - 📈 **Визуализация данных** - графики распределения букв, таблицы статистики
 - 📉 **Анализ информационных потерь** - измерение потерь при переводе
 - 🎨 **Адаптивный дизайн** - светлая/темная/системная тема
 - ⚡ **Высокая производительность** - Go backend + React frontend
-
----
-
-## 🎯 Новое: Полный Цикл Перевода
-
-**Реализация алгоритма из Практической работы №36**:
-
-1. Анализ оригинального текста (русский) → **H₁**
-2. Перевод на целевой язык (например, суахили) → **текст₂**
-3. Анализ переведенного текста → **H₂**
-4. Обратный перевод на русский → **текст₃**
-5. Анализ обратно переведенного текста → **H₃**
-6. **Сравнение**: ΔH = H₁ - H₃ (измерение информационных потерь)
-
-**Пример**:
-```
-Оригинал: "Я люблю, когда шумят берёзы..." (H = 4.116)
-         ↓ Yandex → суахили
-Перевод:  "I upendo ni wakati miti ya birch..." (H = 3.847)
-         ↓ Yandex → русский
-Обратно:  "Я люблю это время березы..." (H = 3.925)
-
-Потеря энтропии: ΔH = 4.116 - 3.925 = 0.191 бит (4.63%)
-```
 
 ---
 
@@ -77,28 +51,6 @@ docker-compose up --build
 # Swagger: http://localhost:8080/swagger/index.html
 ```
 
-### Вариант 2: Локальная разработка
-
-#### Backend
-```bash
-cd backend
-go mod download
-cp .env.example .env
-go run cmd/api/main.go
-```
-
-#### Frontend
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-Подробная инструкция: [DEPLOYMENT.md](DEPLOYMENT.md)
-
-**Важно**: Для полного цикла перевода требуется API ключ Yandex Translate.  
-См. подробную инструкцию: [SETUP_GUIDE.md](SETUP_GUIDE.md)
 
 ---
 
@@ -210,120 +162,6 @@ npm run dev
 ```
 
 Полная документация: [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
-
----
-
-## 🔧 Конфигурация
-
-### Backend Environment Variables
-
-```bash
-# Server
-PORT=8080
-GIN_MODE=debug # или release для production
-
-# Translation APIs (опционально)
-YANDEX_API_KEY=your_key
-GOOGLE_API_KEY=your_key
-DEEPL_API_KEY=your_key
-
-# CORS
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
-```
-
-### Frontend Environment Variables
-
-```bash
-VITE_API_URL=http://localhost:8080
-VITE_APP_NAME=Textropy
-VITE_APP_VERSION=1.0.0
-```
-
----
-
-## 📁 Структура Проекта
-
-```
-textropy/
-├── backend/                    # Go backend
-│   ├── cmd/api/               # Точка входа
-│   ├── internal/
-│   │   ├── domain/            # Domain Layer (DDD)
-│   │   ├── application/       # Use Cases, Services
-│   │   ├── infrastructure/    # External dependencies
-│   │   └── presentation/      # HTTP handlers, DTOs
-│   └── pkg/                   # Shared utilities
-│       ├── config/
-│       └── logger/
-├── frontend/                   # React frontend
-│   ├── src/
-│   │   ├── app/               # App setup
-│   │   ├── features/          # Feature modules
-│   │   │   ├── upload/
-│   │   │   ├── analysis/
-│   │   │   └── settings/
-│   │   ├── shared/            # Shared components
-│   │   │   ├── ui/
-│   │   │   ├── api/
-│   │   │   └── utils/
-│   │   ├── store/             # Zustand store
-│   │   └── theme/             # Theme provider
-│   └── public/
-├── docker-compose.yml
-├── nginx.conf
-├── DEPLOYMENT.md              # Инструкция по развертыванию
-└── README.md
-```
-
----
-
-## 🧪 Тестирование
-
-```bash
-# Backend тесты
-cd backend
-go test ./... -v
-
-# Frontend тесты
-cd frontend
-npm run test
-
-# Линтинг
-go vet ./...        # Backend
-npm run lint        # Frontend
-```
-
----
-
-## 🤝 Вклад в проект
-
-Приветствуются любые предложения и улучшения!
-
-1. Fork проекта
-2. Создайте feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit изменений (`git commit -m 'Add some AmazingFeature'`)
-4. Push в branch (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
----
-
-## 📝 Лицензия
-
-Распространяется под лицензией MIT. См. `LICENSE` для деталей.
-
----
-
-## 👨‍💻 Автор
-
-Создано для учебного курса "Теория и системы обработки информации"
-
----
-
-## 🙏 Благодарности
-
-- Алгоритм основан на работе по энтропийному анализу символьной информации
-- Формула энтропии Клода Шеннона
-- Open-source community за отличные инструменты и библиотеки
 
 ---
 
