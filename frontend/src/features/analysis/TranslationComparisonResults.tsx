@@ -26,6 +26,54 @@ export const TranslationComparisonResults = ({result}: Props) => {
         },
     ], [result]);
 
+    // Гистограмма нормального распределения букв (сортировка по алфавиту)
+    const alphabetSortedData = useMemo(() => {
+        return result.original_analysis.letter_stats
+            .filter(stat => stat.count > 0)
+            .sort((a, b) => a.letter.localeCompare(b.letter))
+            .map(stat => ({
+                letter: stat.letter,
+                probability: stat.probability,
+                count: stat.count,
+            }));
+    }, [result.original_analysis.letter_stats]);
+
+    // Гистограмма с сортировкой по возрастанию частоты
+    const frequencySortedData = useMemo(() => {
+        return result.original_analysis.letter_stats
+            .filter(stat => stat.count > 0)
+            .sort((a, b) => a.probability - b.probability) // сортировка по возрастанию
+            .map(stat => ({
+                letter: stat.letter,
+                probability: stat.probability,
+                count: stat.count,
+            }));
+    }, [result.original_analysis.letter_stats]);
+
+    // Гистограмма для обратного перевода (по алфавиту)
+    const backTranslatedAlphabetSorted = useMemo(() => {
+        return result.back_translated_analysis.letter_stats
+            .filter(stat => stat.count > 0)
+            .sort((a, b) => a.letter.localeCompare(b.letter))
+            .map(stat => ({
+                letter: stat.letter,
+                probability: stat.probability,
+                count: stat.count,
+            }));
+    }, [result.back_translated_analysis.letter_stats]);
+
+    // Гистограмма для обратного перевода (по возрастанию)
+    const backTranslatedFrequencySorted = useMemo(() => {
+        return result.back_translated_analysis.letter_stats
+            .filter(stat => stat.count > 0)
+            .sort((a, b) => a.probability - b.probability)
+            .map(stat => ({
+                letter: stat.letter,
+                probability: stat.probability,
+                count: stat.count,
+            }));
+    }, [result.back_translated_analysis.letter_stats]);
+
     // Топ-10 букв с наибольшими изменениями
     const topChanges = useMemo(() => {
         if (!result.comparison) return [];
@@ -193,6 +241,142 @@ export const TranslationComparisonResults = ({result}: Props) => {
                     </div>
                 </div>
             )}
+
+            {/* Сравнительные гистограммы — по алфавиту */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-2">
+                {/* Оригинал по алфавиту */}
+                <div
+                    className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                        Распределение букв (оригинал, по алфавиту)
+                    </h3>
+                    <ResponsiveContainer width="100%" height={240}>
+                        <BarChart
+                            data={alphabetSortedData}
+                            margin={{top: 10, right: 10, left: 0, bottom: 24}}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" opacity={0.08}/>
+                            <XAxis dataKey="letter" stroke="#9CA3AF"/>
+                            <YAxis
+                                label={{value: 'Частота %', angle: -90, position: 'insideLeft'}}
+                                stroke="#9CA3AF"
+                                tickFormatter={v => (v * 100).toFixed(2)}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'rgba(255,255,255,0.98)',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '0.5rem',
+                                }}
+                                formatter={(val: number) => [`${(val * 100).toFixed(3)}%`, 'Частота']}
+                                labelFormatter={label => `Буква: ${label}`}
+                            />
+                            <Bar dataKey="probability" fill="#00A779" radius={[6, 6, 0, 0]}/>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+                {/* Обратно по алфавиту */}
+                <div
+                    className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                        Распределение букв (обратно, по алфавиту)
+                    </h3>
+                    <ResponsiveContainer width="100%" height={240}>
+                        <BarChart
+                            data={backTranslatedAlphabetSorted}
+                            margin={{top: 10, right: 10, left: 0, bottom: 24}}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" opacity={0.08}/>
+                            <XAxis dataKey="letter" stroke="#9CA3AF"/>
+                            <YAxis
+                                label={{value: 'Частота %', angle: -90, position: 'insideLeft'}}
+                                stroke="#9CA3AF"
+                                tickFormatter={v => (v * 100).toFixed(2)}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'rgba(255,255,255,0.98)',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '0.5rem',
+                                }}
+                                formatter={(val: number) => [`${(val * 100).toFixed(3)}%`, 'Частота (обратно)']}
+                                labelFormatter={label => `Буква: ${label}`}
+                            />
+                            <Bar dataKey="probability" fill="#EF4444" radius={[6, 6, 0, 0]}/>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Сравнительные гистограммы — по частоте */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-2">
+                {/* Оригинал по возрастанию частоты */}
+                <div
+                    className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                        Распределение букв (оригинал, по частоте)
+                    </h3>
+                    <ResponsiveContainer width="100%" height={240}>
+                        <BarChart
+                            data={frequencySortedData}
+                            margin={{top: 10, right: 10, left: 0, bottom: 24}}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" opacity={0.08}/>
+                            <XAxis dataKey="letter" stroke="#9CA3AF"/>
+                            <YAxis
+                                label={{value: 'Частота %', angle: -90, position: 'insideLeft'}}
+                                stroke="#9CA3AF"
+                                tickFormatter={v => (v * 100).toFixed(2)}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'rgba(255,255,255,0.98)',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '0.5rem',
+                                }}
+                                formatter={(val: number) => [`${(val * 100).toFixed(3)}%`, 'Частота']}
+                                labelFormatter={label => `Буква: ${label}`}
+                            />
+                            <Bar dataKey="probability" fill="#3B82F6" radius={[6, 6, 0, 0]}/>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+                {/* Обратно по возрастанию частоты */}
+                <div
+                    className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                        Распределение букв (обратно, по частоте)
+                    </h3>
+                    <ResponsiveContainer width="100%" height={240}>
+                        <BarChart
+                            data={backTranslatedFrequencySorted}
+                            margin={{top: 10, right: 10, left: 0, bottom: 24}}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" opacity={0.08}/>
+                            <XAxis dataKey="letter" stroke="#9CA3AF"/>
+                            <YAxis
+                                label={{value: 'Частота %', angle: -90, position: 'insideLeft'}}
+                                stroke="#9CA3AF"
+                                tickFormatter={v => (v * 100).toFixed(2)}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'rgba(255,255,255,0.98)',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '0.5rem',
+                                }}
+                                formatter={(val: number) => [`${(val * 100).toFixed(3)}%`, 'Частота (обратно)']}
+                                labelFormatter={label => `Буква: ${label}`}
+                            />
+                            <Bar dataKey="probability" fill="#EF4444" radius={[6, 6, 0, 0]}/>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
 
             {/* Тексты для сравнения */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
