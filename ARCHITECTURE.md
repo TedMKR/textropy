@@ -51,7 +51,7 @@ Presentation → Application → Domain → Infrastructure
 
 **Use Cases** (`usecases/`)
 
-- `AnalyzeTextUseCase` - простой анализ текста
+
 - `TranslateAndAnalyzeUseCase` - полный цикл:
     1. Анализ оригинала
     2. Перевод на промежуточный язык
